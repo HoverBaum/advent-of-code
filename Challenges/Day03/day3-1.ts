@@ -126,6 +126,30 @@ const addManhattenDistance = (point: IdentifiedPoint) => ({
   distance: Math.abs(point.x) + Math.abs(point.y)
 })
 
+export const findSmallestX = (instructions: string[]) => {
+  let smallestX = 0
+  let currentX = 0
+  instructions.forEach(instruction => {
+    const directionChar = instruction.charAt(0)
+    if (directionChar === 'L') currentX -= parseInt(instruction.substr(1))
+    if (directionChar === 'R') currentX += parseInt(instruction.substr(1))
+    if (currentX < smallestX) smallestX = currentX
+  })
+  return smallestX
+}
+
+export const findBiggestX = (instructions: string[]) => {
+  let biggestX = 0
+  let currentX = 0
+  instructions.forEach(instruction => {
+    const directionChar = instruction.charAt(0)
+    if (directionChar === 'L') currentX -= parseInt(instruction.substr(1))
+    if (directionChar === 'R') currentX += parseInt(instruction.substr(1))
+    if (currentX > biggestX) biggestX = currentX
+  })
+  return biggestX
+}
+
 const day3part1 = (textInput: string) => {
   const instructionsOne = textInput.split('\n')[0].split(',')
   const instructionsTwo = textInput.split('\n')[1].split(',')

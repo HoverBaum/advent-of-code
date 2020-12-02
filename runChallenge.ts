@@ -15,7 +15,7 @@ const run = async () => {
   }
 
   console.log(
-    `Running challenge: ${year} Day ${dayToRun} - Part ${partToRun} 🎅`
+    `Running challenge: ${year} Day ${dayToRun} - Part ${partToRun} 🎅 \n`
   )
 
   const challengeFolder = path.resolve(
@@ -36,8 +36,9 @@ const run = async () => {
   const input = fs.readFileSync(inputPath).toString()
 
   const answer = solver(input)
-  console.log('Answer:')
+  console.log('\nAnswer:')
   console.log(answer)
+  console.log('')
 }
 
 run()

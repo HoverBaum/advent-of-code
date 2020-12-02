@@ -1,6 +1,6 @@
-# Advent of code 2019
+# Advent of code
 
-This is me doing the advent of code challenges 2019.
+This is me doing the advent of code challenges since 2019.
 
 ## Setup and usage
 
@@ -10,9 +10,11 @@ You can then run `yarn start <day>[-part]` to run the code for a specific part o
 
 To run the first part of day one simply run `yarn start 1`, for part two run `yarn start 1-2`.
 
+To run a challenge from a specific year simply run `yarn start <day>[-part] yyyy`. The year is hardcoded in `runChallenge.ts` and updated when the next event starts.
+
 ## Organization
 
-CHallenges are organized into folders where each day gets it's folder in "Challenges" following the format of `Day[0][number of day]`. Using a leading 0 for days below 10. Within the folder for each day three files are common, those are:
+Challenges are organized into folders where each day gets it's folder in "challenges/[year]" following the format of `Day[0][number of day]`. Using a leading 0 for days below 10. Within the folder for each day three files are common, those are:
 
 - `day[day]-1.ts` - For the first part of this day.
 - `day[day]-2.ts` - For the second part of this day.

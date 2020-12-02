@@ -23,3 +23,9 @@ Challenges are organized into folders where each day gets it's folder in "challe
 Note that here we do not use leading 0s.
 
 The folders for each day may also contain additional files, like tests.
+
+## Test
+
+To create a test simply add a file with `.test.ts` as extension. We use ts-jest to execute those.
+
+You than probably want to run tests for a specific day using a command like: `yarn test challenges/2020/day02`.

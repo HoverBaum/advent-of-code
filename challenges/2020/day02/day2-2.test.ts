@@ -1,6 +1,6 @@
 import checker, { isLineValid } from './day2-2'
 
-describe('Day 2 part 2, count passwords', () => {
+describe('2020, Count passwords', () => {
   it('should find lines valid', () => {
     const input = `1-3 a: abcde`
     expect(isLineValid(input)).toBeTruthy()

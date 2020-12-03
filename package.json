@@ -6,6 +6,7 @@
   "author": "Hendrik <mail@hendrikwallbaum.de>",
   "dependencies": {
     "@types/node": "^12.12.14",
+    "clipboardy": "^2.3.0",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.2"
   },

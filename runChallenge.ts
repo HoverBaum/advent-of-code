@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as clipboardy from 'clipboardy'
 
 let year = 2020
 
@@ -39,6 +40,10 @@ const run = async () => {
   console.log('\nAnswer:')
   console.log(answer)
   console.log('')
+
+  clipboardy
+    .write(answer.toString())
+    .then(() => console.log('📝 Copied to clipboard'))
 }
 
 run()

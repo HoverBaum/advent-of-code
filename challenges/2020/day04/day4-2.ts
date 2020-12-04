@@ -1,22 +1,36 @@
-export type PassportType = {
-  byr: string
+type EyeColorType = 'amb' | 'blu' | 'brn' | 'gry' | 'grn' | 'hzl' | 'oth'
+
+type LengthUnitType = 'cm' | 'in'
+
+type PassportType = {
   birthYear: number
-  iyr: string
-  issueYear: number
-  eyr: string
+  issueYear: Number
   expirationYear: number
-  hgt: string
   height: {
     value: number
-    unit: 'cm' | 'in'
+    unit: LengthUnitType
   }
-  hcl: string
   hairColor: string
-  ecl: 'amb' | 'blu' | 'brn' | 'gry' | 'grn' | 'hzl' | 'oth'
-  eyeColor: 'amb' | 'blu' | 'brn' | 'gry' | 'grn' | 'hzl' | 'oth'
-  pid: string
+  eyeColor: EyeColorType
   passportId: number
   cid?: string
+}
+
+type RawPassportData = {
+  byr: string
+  iyr: string
+  eyr: string
+  hgt: string
+  hcl: string
+  ecl: string
+  pid: string
+  cid?: string
+}
+
+const LOGGER_ENABLED = true
+
+const log = (...args) => {
+  if (LOGGER_ENABLED) console.log(...args)
 }
 
 const requiredFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
@@ -24,65 +38,106 @@ const requiredFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
 const onlyWithAllRequiredFields = (input: string) =>
   requiredFields.every((field) => input.indexOf(field) > -1)
 
-export const validPassports = (passport: PassportType): boolean => {
-  if (passport.birthYear < 1920 || passport.birthYear > 2002) return false
-  if (passport.issueYear < 2010 || passport.issueYear > 2020) return false
-  if (passport.expirationYear < 2020 || passport.expirationYear > 2030)
-    return false
-  if (!passport.hgt.includes('cm') && !passport.hgt.includes('in')) return false
-  if (passport.height.unit === 'cm') {
-    if (passport.height.value < 150 || passport.height.value > 193) return false
-  } else {
-    if (passport.height.value < 59 || passport.height.value > 76) return false
-  }
-  if (!/^#[a-f0-9]{6}$/.test(passport.hairColor)) return false
-  if (!/^(amb|blu|brn|gry|grn|hzl|oth)$/.test(passport.eyeColor)) return false
-  if (passport.passportId > 999999999) return false
-  return true
-}
-
 const numberOfValidPassports = (textInput: string): number => {
   // Split on new lines with only space followed by new line.
   const passports = textInput
     .split(/\n\s*\n/)
     .filter(onlyWithAllRequiredFields)
     .map(parsePassport)
-    .filter(validPassports)
+    .filter((passport) => passport !== undefined)
   return passports.length
 }
 
-// Wow, first task is only counting 🙈
-const parsePassport = (passportInput: string) => {
+// Parse passport input. Assuming all fields are present.
+const parsePassport = (passportInput: string): PassportType | undefined => {
   const fields = passportInput
     .split('\n')
     .reduce((acc, line) => acc.concat(line.split(' ')), []) // Now entries like: 'ecl:brn'
     .filter((line) => line !== '')
-    .map((line) => line.split(':'))
+    .map((line) => line.split(':').map((elm) => elm.trim()))
 
-  const passport = Object.fromEntries(fields) as PassportType
+  const rawPassport = Object.fromEntries(fields) as RawPassportData
 
-  passport.birthYear = parseInt(passport.byr, 10)
-  passport.issueYear = parseInt(passport.iyr, 10)
-  passport.expirationYear = parseInt(passport.eyr, 10)
-  passport.passportId = parseInt(passport.pid, 10)
-
-  if (isNaN(passport.birthYear)) passport.birthYear = 99999999999
-  if (isNaN(passport.issueYear)) passport.issueYear = 99999999999
-  if (isNaN(passport.expirationYear)) passport.expirationYear = 99999999999
-  if (isNaN(passport.passportId)) passport.passportId = 99999999999
-
-  passport.eyeColor = passport.ecl
-  passport.hairColor = passport.hcl
-
-  // Parse height already for easier use later.
-  // Note that weird values lit "DKJFH" as unit just get put to cm 🙊
-  passport.height = {
-    value: parseInt(passport.hgt.replace('cm', '').replace('in', ''), 10),
-    unit: passport.hgt.indexOf('cm') > -1 ? 'cm' : 'in',
+  // Birth Year
+  if (rawPassport.byr.length !== 4 || isNaN(Number(rawPassport.byr))) {
+    log('Birth Year melformed', rawPassport.byr)
+    return undefined
   }
-  if (isNaN(passport.height.value)) passport.height.value = 0
+  const birthYear = Number(rawPassport.byr)
+  if (birthYear < 1920 || birthYear > 2002) {
+    log('Birth Year out of range', birthYear)
+    return undefined
+  }
 
-  return passport
+  // Issued Year
+  if (rawPassport.iyr.length !== 4 || isNaN(Number(rawPassport.iyr))) {
+    log('Issue Year melformed', rawPassport.iyr)
+    return undefined
+  }
+  const issueYear = Number(rawPassport.iyr)
+  if (issueYear < 2010 || issueYear > 2020) {
+    log('Issue Year out of range', issueYear)
+    return undefined
+  }
+
+  // Expiration Year
+  if (rawPassport.eyr.length !== 4 || isNaN(Number(rawPassport.eyr))) {
+    log('Expiration Year melformed', rawPassport.eyr)
+    return undefined
+  }
+  const expirationYear = Number(rawPassport.eyr)
+  if (expirationYear < 2020 || expirationYear > 2030) {
+    log('Expiration Year out of range', expirationYear)
+    return undefined
+  }
+
+  // Passport ID
+  if (rawPassport.pid.length !== 9 || isNaN(Number(rawPassport.pid))) {
+    log('Passport ID melformed', rawPassport.pid)
+    return undefined
+  }
+  const passportId = Number(rawPassport.pid)
+
+  // Eye color
+  if (!/^(amb|blu|brn|gry|grn|hzl|oth)$/.test(rawPassport.ecl)) {
+    log('Invalid Eye Color', rawPassport.ecl)
+    return undefined
+  }
+  const eyeColor = rawPassport.ecl as EyeColorType
+
+  // Hair color
+  if (!/^#[a-f0-9]{6}$/.test(rawPassport.hcl)) {
+    log('Hair Color melformed', rawPassport.hcl)
+    return undefined
+  }
+  const hairColor = rawPassport.hcl
+
+  // Height
+  if (!rawPassport.hgt.includes('cm') && !rawPassport.hgt.includes('in')) {
+    log('Height has no unit', rawPassport.hgt)
+    return undefined
+  }
+  const heightUnit: LengthUnitType =
+    rawPassport.hgt.indexOf('cm') > -1 ? 'cm' : 'in'
+  if (isNaN(Number(rawPassport.hgt.replace(heightUnit, '')))) {
+    log('Height is not a number', rawPassport.hgt)
+    return undefined
+  }
+  const height = {
+    value: Number(rawPassport.hgt.replace(heightUnit, '')),
+    unit: heightUnit,
+  }
+
+  return {
+    birthYear,
+    issueYear,
+    expirationYear,
+    passportId,
+    eyeColor,
+    hairColor,
+    height,
+    cid: rawPassport.cid,
+  }
 }
 
 export default numberOfValidPassports

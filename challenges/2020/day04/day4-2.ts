@@ -1,6 +1,4 @@
-import { parse } from 'path'
-
-type PassportType = {
+export type PassportType = {
   byr: string
   birthYear: number
   iyr: string
@@ -26,7 +24,7 @@ const requiredFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
 const onlyWithAllRequiredFields = (input: string) =>
   requiredFields.every((field) => input.indexOf(field) > -1)
 
-const validPassports = (passport: PassportType): boolean => {
+export const validPassports = (passport: PassportType): boolean => {
   if (passport.birthYear < 1920 || passport.birthYear > 2002) return false
   if (passport.issueYear < 2010 || passport.issueYear > 2020) return false
   if (passport.expirationYear < 2020 || passport.expirationYear > 2030)

@@ -1,4 +1,22 @@
-import numberOfValidPassports from './day4-2'
+import { validateLocaleAndSetLanguage } from 'typescript'
+import numberOfValidPassports, { PassportType, validPassports } from './day4-2'
+
+const passport: PassportType = {
+  iyr: '2016',
+  hgt: '187cm',
+  byr: '1980',
+  pid: '977322718',
+  eyr: '2027',
+  ecl: 'brn',
+  hcl: '#ceb3a1',
+  birthYear: 1980,
+  issueYear: 2016,
+  expirationYear: 2027,
+  passportId: 977322718,
+  eyeColor: 'brn',
+  hairColor: '#ceb3a1',
+  height: { value: 187, unit: 'cm' },
+}
 
 describe('Validating passports', () => {
   it('should discover invalid passports', () => {
@@ -32,5 +50,38 @@ describe('Validating passports', () => {
     
     iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719`
     expect(numberOfValidPassports(input)).toBe(4)
+  })
+
+  it('should validate birth year right', () => {
+    expect(validPassports(passport)).toBeTruthy()
+
+    const tooLow = { ...passport, birthYear: 1919 }
+    expect(validPassports(tooLow)).toBeFalsy()
+
+    const tooHigh = { ...passport, birthYear: 2003 }
+    expect(validPassports(tooHigh)).toBeFalsy()
+  })
+
+  it('shoudl validate height right', () => {
+    expect(validPassports(passport)).toBeTruthy()
+
+    const noUnit = { ...passport, hgt: '234' }
+    expect(validPassports(noUnit)).toBeFalsy()
+
+    const toTallCM = { ...passport, height: { unit: 'cm', value: 194 } }
+    // @ts-ignore
+    expect(validPassports(toTallCM)).toBeFalsy()
+
+    const toSmallCM = { ...passport, height: { unit: 'cm', value: 149 } }
+    // @ts-ignore
+    expect(validPassports(toSmallCM)).toBeFalsy()
+
+    const toTallIN = { ...passport, height: { unit: 'in', value: 77 } }
+    // @ts-ignore
+    expect(validPassports(toTallIN)).toBeFalsy()
+
+    const toSmallIN = { ...passport, height: { unit: 'in', value: 58 } }
+    // @ts-ignore
+    expect(validPassports(toSmallIN)).toBeFalsy()
   })
 })

@@ -113,8 +113,8 @@ const parsePassport = (passportInput: string): PassportType | undefined => {
   const hairColor = rawPassport.hcl
 
   // Height
-  if (!rawPassport.hgt.includes('cm') && !rawPassport.hgt.includes('in')) {
-    log('Height has no unit', rawPassport.hgt)
+  if (!/^\d+(cm|in)$/.test(rawPassport.hgt)) {
+    log('Height is melformed', rawPassport.hgt)
     return undefined
   }
   const heightUnit: LengthUnitType =
@@ -123,8 +123,17 @@ const parsePassport = (passportInput: string): PassportType | undefined => {
     log('Height is not a number', rawPassport.hgt)
     return undefined
   }
+  const value = Number(rawPassport.hgt.replace(heightUnit, ''))
+  if (heightUnit === 'cm' && (value < 150 || value > 193)) {
+    log('Height is out of bound', rawPassport.hgt)
+    return undefined
+  }
+  if (heightUnit === 'in' && (value < 59 || value > 76)) {
+    log('Height is out of bound', rawPassport.hgt)
+    return undefined
+  }
   const height = {
-    value: Number(rawPassport.hgt.replace(heightUnit, '')),
+    value,
     unit: heightUnit,
   }
 

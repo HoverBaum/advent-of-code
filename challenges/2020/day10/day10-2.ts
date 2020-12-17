@@ -1,29 +1,27 @@
 import { sortNumbers } from '../../../lib/array-helpers'
 import { asNumbers } from '../../../lib/input-parsing'
 
-const combinations = (jolts: number[]): number => {
-  if (jolts.length === 1) return 1
-  let result = 0
-  let branches = 0
-  if (jolts.length > 1 && jolts[1] <= jolts[0] + 3) {
-    result += combinations(jolts.slice(1))
-    branches += 1
+const findCombinations = (jolts: number[]): number => {
+  const elements = jolts.map((jolt) => ({ jolt, combinations: 0 }))
+  elements[elements.length - 1].combinations = 1
+  for (let i = jolts.length - 1; i >= 0; i--) {
+    const joltage = elements[i].jolt
+    if (i + 1 < elements.length && elements[i + 1].jolt <= joltage + 3) {
+      elements[i].combinations += elements[i + 1].combinations
+    }
+    if (i + 2 < elements.length && elements[i + 2].jolt <= joltage + 3) {
+      elements[i].combinations += elements[i + 2].combinations
+    }
+    if (i + 3 < elements.length && elements[i + 3].jolt <= joltage + 3) {
+      elements[i].combinations += elements[i + 3].combinations
+    }
   }
-  if (jolts.length > 2 && jolts[2] <= jolts[0] + 3) {
-    result += combinations(jolts.slice(2))
-    branches += 1
-  }
-  if (jolts.length > 3 && jolts[3] <= jolts[0] + 3) {
-    result += combinations(jolts.slice(3))
-    branches += 1
-  }
-  if (branches === 0) return combinations(jolts.slice(1))
-  return result
+  return elements[0].combinations
 }
 
 export const possibleCombinations = (jolts: number[]): number => {
   const sortedJolts = jolts.concat([0]).sort(sortNumbers)
-  return combinations(sortedJolts)
+  return findCombinations(sortedJolts)
 }
 
 const findAllCombinations = (input: string) => {
